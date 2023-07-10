@@ -40,3 +40,9 @@ bin/kafka-server-start.sh config/server.properties
 cd kafka
 bin/kafka-topics.sh --create --topic otnodelogs --bootstrap-server YOUR_PUBLIC_IP:9092 --replication-factor 1 --partitions 1
 ```
+
+### List Topics
+```bash
+export CONFLUENT_USERNAME=your-api-key
+export CONFLUENT_PASSWORD=your-api-secret
+```
