@@ -38,7 +38,7 @@ p = Producer({
 })
 
 def send_log(log):
-    p.produce('MyTopic', parse_log(log))
+    p.produce('otnode-topic', parse_log(log))
     p.flush()  # make sure the logs are sent before the program exits
 
 def main():
