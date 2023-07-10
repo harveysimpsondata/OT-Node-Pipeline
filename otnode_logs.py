@@ -29,7 +29,7 @@ def parse_log(log):
     })
 
 p = Producer({
-    'bootstrap.servers': config.bootstrap_server,
+    'bootstrap.servers': "pkc-619z3.us-east1.gcp.confluent.cloud:9092",
     'sasl.mechanisms': 'PLAIN',
     'security.protocol': 'SASL_SSL',
     'sasl.username': os.getenv('CONFLUENT_USERNAME'),
