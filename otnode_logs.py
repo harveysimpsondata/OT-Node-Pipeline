@@ -1,6 +1,10 @@
 import subprocess
 import json
+import os
 from confluent_kafka import Producer
+
+import config
+
 
 def read_logs():
     p = subprocess.Popen(["otnode-logs"], stdout=subprocess.PIPE, universal_newlines=True)
@@ -24,9 +28,16 @@ def parse_log(log):
         "message": message
     })
 
+p = Producer({
+    'bootstrap.servers': config.bootstrap_server,
+    'sasl.mechanisms': 'PLAIN',
+    'security.protocol': 'SASL_SSL',
+    'sasl.username': os.getenv('CONFLUENT_USERNAME'),
+    'sasl.password': os.getenv('CONFLUENT_PASSWORD')
+})
+
 def send_log(log):
-    p = Producer({'bootstrap.servers': 'mybroker'})
-    p.produce('otnodelogs', parse_log(log))
+    p.produce('MyTopic', parse_log(log))
     p.flush()  # make sure the logs are sent before the program exits
 
 def main():
