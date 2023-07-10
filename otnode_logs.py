@@ -37,9 +37,25 @@ p = Producer({
     'sasl.password': os.getenv('CONFLUENT_PASSWORD')
 })
 
+
+def delivery_report(err, msg):
+    """ Called once for each message produced to indicate delivery result.
+        Triggered by poll() or flush(). """
+    if err is not None:
+        print('Message delivery failed: {}'.format(err))
+    else:
+        print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
+
+
 def send_log(log):
-    p.produce('otnode-topic', parse_log(log))
+    # The produce() function has an optional callback parameter which takes the delivery_report function
+    p.produce('otnode-topic', parse_log(log), callback=delivery_report)
+
+    # Trigger any available delivery report callbacks from previous produce() calls
+    p.poll(0)
+
     p.flush()  # make sure the logs are sent before the program exits
+
 
 def main():
     try:
