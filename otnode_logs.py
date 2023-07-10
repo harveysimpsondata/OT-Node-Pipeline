@@ -3,7 +3,6 @@ import json
 import os
 from confluent_kafka import Producer
 import time
-import config
 
 def read_logs():
     p = subprocess.Popen(["otnode-logs"], stdout=subprocess.PIPE, universal_newlines=True)
