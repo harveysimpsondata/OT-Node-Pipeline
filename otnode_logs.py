@@ -5,7 +5,8 @@ from confluent_kafka import Producer
 import time
 
 def read_logs():
-    p = subprocess.Popen(["otnode-logs"], stdout=subprocess.PIPE, universal_newlines=True)
+    cmd = ["journalctl", "-u", "otnode", "--output", "cat", "-f"]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
 
     while True:
         line = p.stdout.readline()
