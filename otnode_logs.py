@@ -2,9 +2,8 @@ import subprocess
 import json
 import os
 from confluent_kafka import Producer
-
+import time
 import config
-
 
 def read_logs():
     p = subprocess.Popen(["otnode-logs"], stdout=subprocess.PIPE, universal_newlines=True)
@@ -15,6 +14,8 @@ def read_logs():
             break
 
         yield line.strip()  # remove newline
+
+        time.sleep(1)
 
 def parse_log(log):
     parts = log.split('] ', 1)  # split on the first "] "
@@ -41,8 +42,14 @@ def send_log(log):
     p.flush()  # make sure the logs are sent before the program exits
 
 def main():
-    for log in read_logs():
-        send_log(log)
+    try:
+        for log in read_logs():
+            send_log(log)
+    except KeyboardInterrupt:
+        print('Stopping the producer...')
+        p.flush()
+        print('Producer stopped.')
 
 if __name__ == "__main__":
     main()
+
