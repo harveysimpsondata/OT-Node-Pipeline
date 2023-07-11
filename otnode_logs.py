@@ -24,6 +24,11 @@ def parse_log(log):
     level_message = parts[1]
     level, message = level_message.split(': ', 1)  # split on the first ": "
 
+    # Remove color codes
+    ansi_escape = re.compile(r'\x1B(@|[\[\]()#;?]*([0-9]{1,4}(;[0-9]{0,4})*)?[0-9A-PRZcf-ntqry=><]')
+    level = ansi_escape.sub('', level)
+    message = ansi_escape.sub('', message)
+
     return json.dumps({
         "timestamp": timestamp,
         "level": level,
