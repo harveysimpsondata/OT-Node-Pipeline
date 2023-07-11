@@ -28,7 +28,7 @@ def parse_log(log):
     level, message = level_message.split(': ', 1)  # split on the first ": "
 
     # Remove ANSI escape sequences
-    ansi_escape = re.compile(r'\x1B(@|[\[\]()#;?]*([0-9]{1,4}(;[0-9]{0,4})*)?[0-9A-PRZcf-ntqry=><]')
+    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
     level = ansi_escape.sub('', level)
     message = ansi_escape.sub('', message)
 
@@ -37,6 +37,7 @@ def parse_log(log):
         "level": level,
         "message": message
     })
+
 
 p = Producer({
     'bootstrap.servers': "pkc-619z3.us-east1.gcp.confluent.cloud:9092",
