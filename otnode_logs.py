@@ -3,6 +3,7 @@ import json
 import os
 from confluent_kafka import Producer
 import time
+import re
 
 def read_logs():
     cmd = ["journalctl", "-u", "otnode", "--output", "cat", "-f"]
@@ -37,7 +38,6 @@ p = Producer({
     'sasl.password': os.getenv('CONFLUENT_PASSWORD')
 })
 
-
 def delivery_report(err, msg):
     """ Called once for each message produced to indicate delivery result.
         Triggered by poll() or flush(). """
@@ -48,13 +48,15 @@ def delivery_report(err, msg):
 
 
 def send_log(log):
-    # The produce() function has an optional callback parameter which takes the delivery_report function
-    p.produce('otnode-topic', parse_log(log), callback=delivery_report)
+    # Check if the log line has a timestamp in brackets
+    if re.match(r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]', log):
+        # The produce() function has an optional callback parameter which takes the delivery_report function
+        p.produce('otnode-topic', parse_log(log), callback=delivery_report)
 
-    # Trigger any available delivery report callbacks from previous produce() calls
-    p.poll(0)
+        # Trigger any available delivery report callbacks from previous produce() calls
+        p.poll(0)
 
-    p.flush()  # make sure the logs are sent before the program exits
+        p.flush()  # make sure the logs are sent before the program exits
 
 
 def main():
@@ -68,4 +70,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
