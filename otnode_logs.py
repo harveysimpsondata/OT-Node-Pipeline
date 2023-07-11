@@ -19,12 +19,15 @@ def read_logs():
         time.sleep(1)
 
 def parse_log(log):
+    # Decode from Unicode to bytes, then from bytes to string with ASCII
+    log = log.encode().decode('unicode_escape')
+
     parts = log.split('] ', 1)  # split on the first "] "
     timestamp = parts[0][1:]  # remove the first "["
     level_message = parts[1]
     level, message = level_message.split(': ', 1)  # split on the first ": "
 
-    # Remove color codes
+    # Remove ANSI escape sequences
     ansi_escape = re.compile(r'\x1B(@|[\[\]()#;?]*([0-9]{1,4}(;[0-9]{0,4})*)?[0-9A-PRZcf-ntqry=><]')
     level = ansi_escape.sub('', level)
     message = ansi_escape.sub('', message)
